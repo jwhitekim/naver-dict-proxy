@@ -1,0 +1,103 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 340px;
+  background: #ffffff;
+  color: #1f2937;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+}
+
+.app {
+  padding: 12px;
+}
+
+#search-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#word-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+#word-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+.status {
+  color: #6b7280;
+  margin: 0;
+}
+
+.status.error {
+  color: #dc2626;
+}
+
+.entry-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.entry-word {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.entry-phonetic {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.section {
+  padding-top: 4px;
+}
+
+.definition-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.definition-list li {
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.definition-list li:last-child {
+  margin-bottom: 0;
+}
+
+.example {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  background: #f0f6ff;
+  border-radius: 6px;
+  color: #374151;
+  font-style: italic;
+  line-height: 1.4;
+}

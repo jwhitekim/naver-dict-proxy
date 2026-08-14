@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "My Dictionary",
+  "version": "1.0.0",
+  "description": "Look up English words in the Naver English-Korean dictionary.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "host_permissions": [
+    "http://localhost:3001/*"
+  ]
+}
