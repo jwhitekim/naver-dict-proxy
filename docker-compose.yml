@@ -1,3 +1,5 @@
+name: my-dictionary
+
 services:
   app:
     build: .
