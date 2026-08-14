@@ -4,7 +4,9 @@
   "description": "Local dictionary server (Free Dictionary API + unofficial Naver en-ko dictionary proxy)",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "start:bg": "nohup node server/server.js > server.log 2>&1 & echo $! > server.pid",
+    "stop": "kill $(cat server.pid) && rm -f server.pid"
   },
   "dependencies": {
     "cors": "^2.8.5",

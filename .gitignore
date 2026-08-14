@@ -1,3 +1,6 @@
 node_modules/
 .DS_Store
 .claude/
+server.log
+server.pid
+extension.zip
