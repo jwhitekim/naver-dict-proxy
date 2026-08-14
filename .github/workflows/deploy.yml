@@ -4,19 +4,59 @@ on:
   push:
     branches: [main]
 
-env:
-  APP_PORT: "9000"
-
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    environment: production
+
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Restart server
-        run: docker compose up -d --build
-
-      - name: Health check
+      - name: Configure SSH
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST || secrets.SERVER_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
-          sleep 2
-          curl -sf http://127.0.0.1:${APP_PORT}/health
+          set -euo pipefail
+
+          : "${SSH_PRIVATE_KEY:?GitHub secret SSH_PRIVATE_KEY is not set}"
+          : "${SSH_HOST:?GitHub secret SSH_HOST or SERVER_HOST is not set}"
+          : "${SSH_PORT:?GitHub secret SSH_PORT is not set}"
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/dict_proxy_deploy
+          chmod 600 ~/.ssh/dict_proxy_deploy
+
+          if ! timeout 10 bash -c ": < /dev/tcp/$SSH_HOST/$SSH_PORT" 2>/dev/null; then
+            echo "::error::${SSH_HOST}:${SSH_PORT}에 연결할 수 없습니다. 방화벽/포트포워딩과 SSH_HOST·SSH_PORT secret 값을 확인하세요."
+            exit 1
+          fi
+
+          ssh-keyscan -p "$SSH_PORT" -T 10 -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST || secrets.SERVER_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER || secrets.SERVER_USER }}
+        run: |
+          set -euo pipefail
+
+          : "${SSH_USER:?GitHub secret SSH_USER or SERVER_USER is not set}"
+
+          ssh \
+            -i ~/.ssh/dict_proxy_deploy \
+            -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" \
+            'wsl.exe -- bash -s' <<'REMOTE_SCRIPT'
+          set -euo pipefail
+          cd /mnt/c/Users/admin/joonspace/naver-dict-proxy
+          git fetch origin main
+          git reset --hard origin/main
+          docker compose up -d --build
+          docker compose ps
+          REMOTE_SCRIPT
