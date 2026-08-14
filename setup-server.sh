@@ -9,7 +9,7 @@ Usage:
 Example:
   ./setup-server.sh example.com admin@example.com
 
-The application is expected to be available on 127.0.0.1:9000 (override with APP_PORT).
+The application is expected to be available on 127.0.0.1:8002 (override with APP_PORT).
 Router TCP ports 80 and 443 must point to this server.
 EOF
 }
@@ -21,7 +21,7 @@ fi
 
 DOMAIN=$1
 EMAIL=$2
-APP_PORT="${APP_PORT:-9000}"
+APP_PORT="${APP_PORT:-8002}"
 NGINX_SITE="/etc/nginx/sites-available/${DOMAIN}"
 NGINX_LINK="/etc/nginx/sites-enabled/${DOMAIN}"
 CERT_PATH="/etc/letsencrypt/live/${DOMAIN}"
