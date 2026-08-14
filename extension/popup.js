@@ -1,4 +1,4 @@
-const NAVER_SERVER = 'http://localhost:3001';
+const NAVER_SERVER = window.DICT_SERVER;
 
 const form = document.getElementById('search-form');
 const input = document.getElementById('word-input');
