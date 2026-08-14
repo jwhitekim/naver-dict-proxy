@@ -6,6 +6,15 @@
   "action": {
     "default_popup": "popup.html"
   },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+D",
+        "mac": "Alt+D"
+      },
+      "description": "Open My Dictionary"
+    }
+  },
   "host_permissions": [
     "http://localhost:3001/*"
   ]

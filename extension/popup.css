@@ -1,103 +1,291 @@
+/* ---------------------------------------------------------------------
+   My Dictionary — popup styling
+
+   Type system: content (headword, senses, examples) is set in a serif —
+   the way a printed dictionary page reads — while the app chrome (search
+   field, brand row, source line) is set in the system sans, so the two
+   registers ("this is dictionary content" vs "this is the tool around
+   it") are visually distinct without needing extra labels.
+
+   Sense numbers use real CSS counters (circled numerals), not decoration
+   — order is the one piece of structure a dictionary entry actually
+   carries. The phonetic transcription is set in monospace inside slashes,
+   the standard IPA convention.
+   ------------------------------------------------------------------- */
+
+:root {
+  --paper: #ffffff;
+  --ink: #17181c;
+  --ink-muted: #6b7280;
+  --ink-faint: #9aa0ac;
+  --accent: #1d4ed8;
+  --accent-soft: #eef2ff;
+  --rule: #e6e7ea;
+  --example-bg: #f6f7f9;
+  --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #16181d;
+    --ink: #ecedef;
+    --ink-muted: #9aa0ac;
+    --ink-faint: #6b7280;
+    --accent: #7c9bff;
+    --accent-soft: #1c2333;
+    --rule: #272a31;
+    --example-bg: #1c1f26;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  width: 340px;
-  background: #ffffff;
-  color: #1f2937;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  width: 360px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
   font-size: 14px;
 }
 
 .app {
-  padding: 12px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding: 14px 16px 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  color: var(--ink-faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brand-mark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
 }
 
 #search-form {
   display: flex;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 #word-input {
   flex: 1;
+  min-width: 0;
   padding: 8px 10px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--rule);
   border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
   font-size: 14px;
 }
 
-#word-input:focus {
-  outline: none;
-  border-color: #3b82f6;
+#word-input::placeholder {
+  color: var(--ink-faint);
+}
+
+#word-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
 }
 
 button {
   padding: 8px 14px;
   border: none;
   border-radius: 6px;
-  background: #3b82f6;
+  background: var(--accent);
   color: #ffffff;
+  font-family: var(--sans);
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 button:hover {
-  background: #2563eb;
+  filter: brightness(1.08);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .status {
-  color: #6b7280;
   margin: 0;
+  color: var(--ink-muted);
+  font-family: var(--sans);
 }
 
 .status.error {
-  color: #dc2626;
+  color: #b3452f;
+}
+
+.entry {
+  animation: rise 0.15s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry {
+    animation: none;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .entry-header {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 10px;
 }
 
 .entry-word {
-  font-size: 18px;
-  font-weight: 600;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .entry-phonetic {
-  color: #6b7280;
-  font-size: 13px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-muted);
 }
 
 .section {
-  padding-top: 4px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
 }
 
-.definition-list {
-  margin: 0;
-  padding-left: 18px;
+.section:first-of-type {
+  border-top: none;
+  padding-top: 0;
 }
 
-.definition-list li {
+.pos {
+  display: block;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   margin-bottom: 6px;
-  line-height: 1.4;
 }
 
-.definition-list li:last-child {
+.sense-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: sense;
+}
+
+.sense-list li {
+  position: relative;
+  margin-bottom: 12px;
+  padding-left: 22px;
+  counter-increment: sense;
+}
+
+.sense-list li::before {
+  content: counter(sense);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+}
+
+.sense-list li:last-child {
   margin-bottom: 0;
 }
 
+.sense-meaning {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.level-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
 .example {
-  margin: 10px 0 0;
-  padding: 8px 10px;
-  background: #f0f6ff;
+  margin-top: 6px;
+  padding: 7px 9px;
+  background: var(--example-bg);
   border-radius: 6px;
-  color: #374151;
+}
+
+.example-en {
+  margin: 0;
+  font-family: var(--serif);
   font-style: italic;
+  color: var(--ink);
   line-height: 1.4;
+}
+
+.example-ko {
+  margin: 3px 0 0;
+  padding-left: 8px;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.source {
+  margin: 12px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-faint);
+  font-family: var(--sans);
+  font-size: 11px;
 }

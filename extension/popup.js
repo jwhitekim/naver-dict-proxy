@@ -33,26 +33,50 @@ async function lookup(word) {
 }
 
 function render(result) {
-  // definition is formatted as "품사: 뜻1, 뜻2 / 품사2: 뜻1..." — split into one line per part of speech.
-  const definitionLines = (result.definition || '').split(' / ').filter(Boolean);
-
   resultEl.innerHTML = `
     <div class="entry">
       <div class="entry-header">
         <span class="entry-word">${escapeHtml(result.word)}</span>
-        ${result.phonetic ? `<span class="entry-phonetic">${escapeHtml(result.phonetic)}</span>` : ''}
+        ${result.phonetic ? `<span class="entry-phonetic">/${escapeHtml(result.phonetic)}/</span>` : ''}
       </div>
-      <div class="section">
-        ${
-          definitionLines.length
-            ? `<ul class="definition-list">${definitionLines
-                .map((line) => `<li>${escapeHtml(line)}</li>`)
-                .join('')}</ul>`
-            : '<p class="status error">뜻을 찾을 수 없습니다.</p>'
-        }
-        ${result.example ? `<p class="example">${escapeHtml(result.example)}</p>` : ''}
-      </div>
+      ${
+        result.meanings?.length
+          ? result.meanings.map(renderMeaning).join('')
+          : '<p class="status error">뜻을 찾을 수 없습니다.</p>'
+      }
+      ${result.source ? `<p class="source">${escapeHtml(result.source)}</p>` : ''}
     </div>
+  `;
+}
+
+function renderMeaning(meaning) {
+  const senses = meaning.senses.map(renderSense).join('');
+  return `
+    <div class="section">
+      <span class="pos">${escapeHtml(meaning.partOfSpeech)}</span>
+      <ol class="sense-list">${senses}</ol>
+    </div>
+  `;
+}
+
+function renderSense(sense) {
+  const examples = sense.examples
+    .map(
+      (ex) => `
+        <div class="example">
+          <p class="example-en">${escapeHtml(ex.en)}</p>
+          ${ex.ko ? `<p class="example-ko">${escapeHtml(ex.ko)}</p>` : ''}
+        </div>
+      `
+    )
+    .join('');
+
+  return `
+    <li>
+      <span class="sense-meaning">${escapeHtml(sense.meaning)}</span>
+      ${sense.level ? `<span class="level-badge">${escapeHtml(sense.level)}</span>` : ''}
+      ${examples}
+    </li>
   `;
 }
 

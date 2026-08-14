@@ -104,6 +104,20 @@ function stripHtml(str) {
   return typeof str === 'string' ? str.replace(/<\/?(?:b|i|u|em|strong|sup|sub)>/gi, '').trim() : str;
 }
 
+const MAX_EXAMPLES_PER_SENSE = 2;
+
+// Each mean's examples[] holds the raw example + a translations[] array;
+// origin_example/origin_translation are already plain text (no HTML tags).
+function extractExamples(mean) {
+  return (mean.examples || [])
+    .slice(0, MAX_EXAMPLES_PER_SENSE)
+    .map((ex) => ({
+      en: ex.origin_example || null,
+      ko: ex.translations?.[0]?.origin_translation || null,
+    }))
+    .filter((ex) => ex.en);
+}
+
 // Build the unified shape from a /api/v2/platform/enko/entry response.
 // searchItem is optional (only available when this came from /lookup, which
 // ran a search first) and only supplies the phonetic symbol.
@@ -113,34 +127,32 @@ function buildEntryResult(word, searchItem, entryData) {
 
   const partOfSpeech = parts.map((p) => p.part_ko_name).filter(Boolean).join(', ');
 
-  const definition = parts
+  const meanings = parts
     .map((p) => {
-      const means = (p.means || [])
-        .map((m) => stripHtml(m.show_mean))
-        .filter(Boolean)
-        .join(', ');
-      return means ? `${p.part_ko_name}: ${means}` : null;
+      const senses = (p.means || [])
+        .filter((m) => m.show_mean)
+        .map((m) => ({
+          meaning: stripHtml(m.show_mean),
+          level: m.level_inter_search ? '중급' : null,
+          examples: extractExamples(m),
+        }));
+      return senses.length ? { partOfSpeech: p.part_ko_name, senses } : null;
     })
-    .filter(Boolean)
-    .join(' / ');
-
-  const relatedExample = Array.isArray(entry?.relatedExamples) ? entry.relatedExamples[0] : null;
-  const example = relatedExample
-    ? `${relatedExample.sourceExample} (${relatedExample.sourceTranslation})`
-    : null;
+    .filter(Boolean);
 
   // Naver joins multiple senses in primary_mean with a "|||" delimiter.
   const primaryMean = entry?.primary_mean
     ? entry.primary_mean.split('|||').join(', ')
     : null;
+  const koreanMeaning =
+    primaryMean || meanings.flatMap((m) => m.senses.map((s) => s.meaning)).join(', ') || null;
 
   return {
     word: word || entry?.members?.[0]?.entry_name || null,
     phonetic: extractPhonetic(searchItem),
     partOfSpeech,
-    definition,
-    example,
-    koreanMeaning: primaryMean || definition || null,
+    meanings,
+    koreanMeaning,
     source: entry?.entrySource?.sourceDicts?.[0]?.dict_name || null,
   };
 }
