@@ -4,20 +4,19 @@ on:
   push:
     branches: [main]
 
+env:
+  APP_PORT: "9000"
+
 jobs:
   deploy:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
-      - run: npm ci
-
       - name: Restart server
-        run: |
-          npm run stop || true
-          npm run start:bg
+        run: docker compose up -d --build
 
       - name: Health check
         run: |
           sleep 2
-          curl -sf http://localhost:3001/health
+          curl -sf http://127.0.0.1:${APP_PORT}/health
