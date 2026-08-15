@@ -13,6 +13,28 @@
    the standard IPA convention.
    ------------------------------------------------------------------- */
 
+/* Bundled locally (not loaded from a CDN) so the panel renders instantly
+   offline. "subset" build = modern-use Hangul + Latin only, ~270KB/weight
+   instead of ~2MB for full glyph coverage. */
+@font-face {
+  font-family: 'Pretendard';
+  src: url('fonts/Pretendard-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('fonts/Pretendard-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('fonts/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
   --paper: #ffffff;
   --ink: #17181c;
@@ -23,8 +45,8 @@
   --rule: #e6e7ea;
   --example-bg: #f6f7f9;
   --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
-  --sans: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Malgun Gothic', system-ui,
-    sans-serif;
+  --sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Malgun Gothic',
+    system-ui, sans-serif;
   --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
 }
 
@@ -240,7 +262,7 @@ button:focus-visible {
 }
 
 .sense-meaning {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 15px;
   line-height: 1.45;
 }
