@@ -85,17 +85,31 @@ function pickSearchItem(searchData) {
   return null;
 }
 
-// Same search response, but pick a specific dictionary by name (e.g. "동아",
-// "YBM") instead of always taking the first WORD-group item. Matching items
-// can land in any group, not just WORD, so every group is scanned.
-function pickSearchItemBySource(searchData, source) {
-  const groups = searchData?.searchResultMap?.searchResultListMap;
-  if (!groups) return null;
+function buildEntryUrl(entryId) {
+  return `${NAVER_BASE}/api/v2/platform/enko/entry?entryId=${encodeURIComponent(
+    entryId
+  )}&isConjsShowTTS=true&searchResult=false`;
+}
 
-  for (const group of Object.values(groups)) {
-    for (const item of group.items || []) {
-      if (item.entryId && item.sourceDictnameKO?.includes(source)) return item;
-    }
+// Find a specific dictionary's entry (e.g. "동아", "YBM") for the same
+// headword as an already-fetched entry. /api3/enko/search's WORD group only
+// ranks the top ~5 results, so scanning search results misses entries that
+// exist but rank low (confirmed: Dong-a's "ablation" entry sits outside the
+// top 100 of 198 matches). The reliable source is each entry's own
+// entry.group.groupEntrys — every dictionary's version of the same headword,
+// across every language pair (enko, enen, enru, ...). Filtering to enko and
+// checking each candidate's dict_name is exhaustive, not rank-limited.
+async function findEntryBySource(defaultEntryId, defaultEntryData, source) {
+  const defaultDictName = defaultEntryData?.entry?.entrySource?.sourceDicts?.[0]?.dict_name;
+  if (defaultDictName?.includes(source)) return { entryId: defaultEntryId, entryData: defaultEntryData };
+
+  const groupEntrys = defaultEntryData?.entry?.group?.groupEntrys || [];
+  const candidates = groupEntrys.filter((ge) => ge.dict_type === 'enko' && ge.entry_id !== defaultEntryId);
+
+  for (const candidate of candidates) {
+    const entryData = await naverFetch(buildEntryUrl(candidate.entry_id));
+    const dictName = entryData?.entry?.entrySource?.sourceDicts?.[0]?.dict_name;
+    if (dictName?.includes(source)) return { entryId: candidate.entry_id, entryData };
   }
   return null;
 }
@@ -203,10 +217,7 @@ app.get('/api/naver/entry', async (req, res) => {
   if (cached) return res.json({ ...cached, cached: true });
 
   try {
-    const url = `${NAVER_BASE}/api/v2/platform/enko/entry?entryId=${encodeURIComponent(
-      entryId
-    )}&isConjsShowTTS=true&searchResult=false`;
-    const entryData = await naverFetch(url);
+    const entryData = await naverFetch(buildEntryUrl(entryId));
 
     const result = buildEntryResult(null, null, entryData);
     setCached(cacheKey, result);
@@ -231,20 +242,31 @@ app.get('/api/naver/lookup', async (req, res) => {
     )}&m=pc&range=all&shouldSearchVlive=true&lang=ko`;
     const searchData = await naverFetch(searchUrl);
 
-    const searchItem = source ? pickSearchItemBySource(searchData, source) : pickSearchItem(searchData);
+    const searchItem = pickSearchItem(searchData);
     if (!searchItem?.entryId) {
       return res.status(404).json({
-        error: source ? `No "${source}" entry found for this word` : 'No matching entry found for this word',
+        error: 'No matching entry found for this word',
         searchResult: searchData,
       });
     }
 
-    const entryUrl = `${NAVER_BASE}/api/v2/platform/enko/entry?entryId=${encodeURIComponent(
-      searchItem.entryId
-    )}&isConjsShowTTS=true&searchResult=false`;
-    const entryData = await naverFetch(entryUrl);
+    const defaultEntryData = await naverFetch(buildEntryUrl(searchItem.entryId));
 
-    const result = buildEntryResult(word, searchItem, entryData);
+    let finalSearchItem = searchItem;
+    let finalEntryData = defaultEntryData;
+
+    if (source) {
+      const match = await findEntryBySource(searchItem.entryId, defaultEntryData, source);
+      if (!match) {
+        return res.status(404).json({ error: `No "${source}" entry found for this word` });
+      }
+      // A groupEntrys match didn't come from search, so there's no phonetic
+      // data for it — buildEntryResult handles a null searchItem fine.
+      finalSearchItem = match.entryId === searchItem.entryId ? searchItem : null;
+      finalEntryData = match.entryData;
+    }
+
+    const result = buildEntryResult(word, finalSearchItem, finalEntryData);
     setCached(cacheKey, result);
     res.json(result);
   } catch (err) {
