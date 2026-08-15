@@ -152,6 +152,34 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+.source-picker {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.source-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.source-btn:hover {
+  filter: none;
+  border-color: var(--accent);
+}
+
+.source-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
 .status {
   margin: 0;
   color: var(--ink-muted);
