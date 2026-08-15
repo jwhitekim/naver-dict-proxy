@@ -1,3 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <polygon points="32,14 96,14 96,120 64,94 32,120" fill="#1d4ed8" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="My Dict">
+  <rect width="128" height="128" rx="37" fill="#3659c9" />
+  <path
+    fill="#fff"
+    d="M23 94v-8h11V43H23v-8h29l14 35 15-35h25v8H96v43h10v8H75v-8h9V52L67 94h-6L45 53v33h11v8H23Z"
+  />
 </svg>

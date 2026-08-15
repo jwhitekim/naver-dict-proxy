@@ -4,9 +4,12 @@ const form = document.getElementById('search-form');
 const input = document.getElementById('word-input');
 const resultEl = document.getElementById('result');
 const sourceButtons = document.querySelectorAll('.source-btn');
+const searchButton = form.querySelector('.search-button');
+const suggestionButtons = document.querySelectorAll('.suggestion');
 
 let currentSource = '';
 let currentWord = '';
+let activeLookup = 0;
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -17,10 +20,21 @@ form.addEventListener('submit', (e) => {
 sourceButtons.forEach((btn) => {
   btn.addEventListener('click', () => {
     if (btn.classList.contains('active')) return;
-    sourceButtons.forEach((b) => b.classList.remove('active'));
+    sourceButtons.forEach((b) => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
     btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
     currentSource = btn.dataset.source;
     if (currentWord) lookup(currentWord);
+  });
+});
+
+suggestionButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    input.value = btn.dataset.word;
+    lookup(btn.dataset.word);
   });
 });
 
@@ -30,22 +44,44 @@ async function fetchNaverMeaning(word, source) {
   const res = await fetch(`${NAVER_SERVER}/api/naver/lookup?${params}`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Naver lookup responded ${res.status}`);
+    const err = new Error(body.error || `Naver lookup responded ${res.status}`);
+    err.status = res.status;
+    throw err;
   }
   return res.json();
 }
 
 async function lookup(word) {
+  const lookupId = ++activeLookup;
   currentWord = word;
-  resultEl.innerHTML = '<p class="status">Searching...</p>';
+  input.value = word;
+  resultEl.setAttribute('aria-busy', 'true');
+  searchButton.disabled = true;
+  resultEl.innerHTML = '<p class="status">사전에서 단어를 찾고 있어요…</p>';
 
   try {
     const result = await fetchNaverMeaning(word, currentSource);
+    if (lookupId !== activeLookup) return;
     render(result);
   } catch (err) {
-    resultEl.innerHTML = `<p class="status error">"${escapeHtml(word)}" 검색 결과가 없습니다. (${escapeHtml(
-      err.message
-    )})</p>`;
+    if (lookupId !== activeLookup) return;
+    // A 404 while a specific dictionary is selected just means that
+    // dictionary doesn't have this word — not that the word doesn't exist
+    // anywhere. Say so instead of a generic failure, and point at the
+    // other tabs rather than surfacing the raw server error text.
+    if (err.status === 404 && currentSource) {
+      const sourceLabel = document.querySelector('.source-btn.active')?.textContent || currentSource;
+      resultEl.innerHTML = `<p class="status error">"${escapeHtml(word)}"의 ${escapeHtml(
+        sourceLabel
+      )} 사전 항목이 없습니다. 다른 사전을 선택해보세요.</p>`;
+      return;
+    }
+    resultEl.innerHTML = `<p class="status error">"${escapeHtml(word)}" 검색 결과가 없습니다.</p>`;
+  } finally {
+    if (lookupId === activeLookup) {
+      resultEl.setAttribute('aria-busy', 'false');
+      searchButton.disabled = false;
+    }
   }
 }
 
