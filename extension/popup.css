@@ -23,7 +23,8 @@
   --rule: #e6e7ea;
   --example-bg: #f6f7f9;
   --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
-  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Malgun Gothic', system-ui,
+    sans-serif;
   --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
 }
 
