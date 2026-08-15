@@ -1,10 +1,28 @@
 {
   "manifest_version": 3,
-  "name": "야매 옥스퍼드",
-  "version": "1.0.0",
-  "description": "정식 허가 1도 없이 네이버 사전 뒷문으로 들어가는 확장 프로그램. 서버 안 켜져 있으면 그냥 죽은 척함.",
+  "name": "My Dict",
+  "version": "1.2.0",
+  "description": "Look up English words in the Naver English-Korean dictionary.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
-    "default_popup": "popup.html"
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["sidePanel"],
+  "side_panel": {
+    "default_path": "popup.html"
   },
   "commands": {
     "_execute_action": {
@@ -12,7 +30,7 @@
         "default": "Alt+D",
         "mac": "Alt+D"
       },
-      "description": "야매 옥스퍼드 열기"
+      "description": "Open My Dict"
     }
   }
 }
