@@ -85,6 +85,21 @@ function pickSearchItem(searchData) {
   return null;
 }
 
+// Same search response, but pick a specific dictionary by name (e.g. "동아",
+// "YBM") instead of always taking the first WORD-group item. Matching items
+// can land in any group, not just WORD, so every group is scanned.
+function pickSearchItemBySource(searchData, source) {
+  const groups = searchData?.searchResultMap?.searchResultListMap;
+  if (!groups) return null;
+
+  for (const group of Object.values(groups)) {
+    for (const item of group.items || []) {
+      if (item.entryId && item.sourceDictnameKO?.includes(source)) return item;
+    }
+  }
+  return null;
+}
+
 function extractPhonetic(searchItem) {
   const list = searchItem?.searchPhoneticSymbolList;
   if (Array.isArray(list)) {
@@ -203,10 +218,10 @@ app.get('/api/naver/entry', async (req, res) => {
 });
 
 app.get('/api/naver/lookup', async (req, res) => {
-  const { word } = req.query;
+  const { word, source } = req.query;
   if (!word) return res.status(400).json({ error: 'word is required' });
 
-  const cacheKey = word.trim().toLowerCase();
+  const cacheKey = `${word.trim().toLowerCase()}${source ? `:${source}` : ''}`;
   const cached = getCached(cacheKey);
   if (cached) return res.json({ ...cached, cached: true });
 
@@ -216,10 +231,10 @@ app.get('/api/naver/lookup', async (req, res) => {
     )}&m=pc&range=all&shouldSearchVlive=true&lang=ko`;
     const searchData = await naverFetch(searchUrl);
 
-    const searchItem = pickSearchItem(searchData);
+    const searchItem = source ? pickSearchItemBySource(searchData, source) : pickSearchItem(searchData);
     if (!searchItem?.entryId) {
       return res.status(404).json({
-        error: 'No matching entry found for this word',
+        error: source ? `No "${source}" entry found for this word` : 'No matching entry found for this word',
         searchResult: searchData,
       });
     }
