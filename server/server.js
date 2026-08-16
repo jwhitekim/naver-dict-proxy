@@ -5,8 +5,10 @@
 // https://en.dict.naver.com and can change or break without notice.
 // See README.md for usage caveats (personal/local use, rate limiting).
 
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
+const archiver = require('archiver');
 
 const app = express();
 app.use(cors());
@@ -187,6 +189,29 @@ function buildEntryResult(word, searchItem, entryData) {
 }
 
 // --- Routes ------------------------------------------------------------------
+
+// Personal-use install link: visiting the server's own domain downloads the
+// Chrome extension, zipped fresh from extension/ on every request so it's
+// never stale. config.js isn't checked into git (keeps the real domain out
+// of the public repo — see extension/config.example.js), so it's generated
+// here from the request's own Host header instead, pointing the extension
+// at whichever domain served the zip.
+app.get('/', (req, res) => {
+  res.attachment('my-dict-extension.zip');
+
+  const archive = archiver('zip', { zlib: { level: 9 } });
+  archive.on('error', (err) => {
+    console.error('[extension zip] failed:', err.message);
+    res.status(500).end();
+  });
+  archive.pipe(res);
+
+  const extensionDir = path.join(__dirname, '..', 'extension');
+  archive.glob('**/*', { cwd: extensionDir, ignore: ['config.js'] });
+  archive.append(`window.DICT_SERVER = 'https://${req.get('host')}';\n`, { name: 'config.js' });
+
+  archive.finalize();
+});
 
 app.get('/api/naver/search', async (req, res) => {
   const { query } = req.query;
