@@ -27,8 +27,8 @@
   "commands": {
     "_execute_action": {
       "suggested_key": {
-        "default": "Alt+D",
-        "mac": "Alt+D"
+        "default": "Alt+Shift+D",
+        "mac": "Alt+Shift+D"
       },
       "description": "Open My Dict"
     }

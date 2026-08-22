@@ -54,7 +54,7 @@ async function fetchNaverMeaning(word, source) {
 async function lookup(word) {
   const lookupId = ++activeLookup;
   currentWord = word;
-  input.value = word;
+  input.value = '';
   resultEl.setAttribute('aria-busy', 'true');
   searchButton.disabled = true;
   resultEl.innerHTML = '<p class="status">사전에서 단어를 찾고 있어요…</p>';
