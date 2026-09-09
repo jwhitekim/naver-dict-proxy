@@ -11,6 +11,14 @@ let currentSource = '';
 let currentWord = '';
 let activeLookup = 0;
 
+// The side panel document isn't reloaded when it's closed and reopened, so
+// the `autofocus` attribute only fires once. Refocus the input whenever the
+// panel becomes visible again.
+input.focus();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') input.focus();
+});
+
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   const word = input.value.trim();
