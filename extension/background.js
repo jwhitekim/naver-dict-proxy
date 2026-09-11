@@ -1,5 +1,5 @@
 // The side panel is disabled by default for every tab. Clicking the toolbar
-// icon (or its Alt+W shortcut) enables and opens it only for that tab,
+// icon (or its Alt+K shortcut) enables and opens it only for that tab,
 // so it doesn't follow you when you switch to a different tab.
 chrome.runtime.onInstalled.addListener(() => {
   chrome.sidePanel.setOptions({ enabled: false });
@@ -8,8 +8,8 @@ chrome.runtime.onInstalled.addListener(() => {
 // chrome.sidePanel has no way to ask "is it currently open" or a close()
 // call — enabled:false is the only way to close one, so toggling means
 // tracking open/closed ourselves per tab. This can drift out of sync if the
-// panel is closed via its own X button instead of Alt+W (no event
-// fires for that), in which case one Alt+W press is spent resyncing
+// panel is closed via its own X button instead of Alt+K (no event
+// fires for that), in which case one Alt+K press is spent resyncing
 // before it opens again.
 const openTabs = new Set();
 
