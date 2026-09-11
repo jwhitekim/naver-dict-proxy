@@ -8,6 +8,8 @@
   </head>
   <body>
     <div class="app">
+      <div id="fore-edge-tab" class="fore-edge-tab" hidden aria-hidden="true"></div>
+
       <header class="app-header">
         <form id="search-form" role="search">
           <label class="sr-only" for="word-input">영어 단어 검색</label>
@@ -28,28 +30,52 @@
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
           </button>
         </form>
-
-        <nav id="source-picker" class="source-picker" aria-label="영한사전 선택">
-          <button type="button" class="source-btn active" data-source="" aria-pressed="true">Oxford</button>
-          <button type="button" class="source-btn" data-source="동아" aria-pressed="false">동아</button>
-          <button type="button" class="source-btn" data-source="YBM" aria-pressed="false">YBM</button>
-        </nav>
       </header>
 
       <main id="result" aria-live="polite" aria-atomic="false">
-        <div class="empty-state">
-          <div class="empty-icon" aria-hidden="true">
-            <svg viewBox="0 0 32 32">
-              <path d="M7.5 5.5h12a5 5 0 0 1 5 5v16h-12a5 5 0 0 1-5-5v-16Z" />
-              <path d="M12.5 9.5h7M12.5 13.5h7M12.5 17.5h4" />
-            </svg>
+        <div class="empty-state" id="empty-state">
+          <div class="empty-lead">
+            <div class="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32">
+                <path d="M7.5 5.5h12a5 5 0 0 1 5 5v16h-12a5 5 0 0 1-5-5v-16Z" />
+                <path d="M12.5 9.5h7M12.5 13.5h7M12.5 17.5h4" />
+              </svg>
+            </div>
+            <p class="empty-title">궁금한 단어를 찾아보세요</p>
           </div>
-          <p class="empty-title">궁금한 단어를 찾아보세요</p>
-          <p class="empty-description">뜻과 발음, 실제 예문을<br />한눈에 확인할 수 있어요.</p>
-          <div class="suggestions" aria-label="검색 예시">
-            <button type="button" class="suggestion" data-word="serendipity">serendipity</button>
-            <button type="button" class="suggestion" data-word="resilient">resilient</button>
-            <button type="button" class="suggestion" data-word="nuance">nuance</button>
+
+          <div class="block" id="recent-block" hidden>
+            <div class="block-head">
+              <span class="block-title">최근 본 단어</span>
+            </div>
+            <div class="recent-row" id="recent-row"></div>
+          </div>
+
+          <div class="block">
+            <div class="block-head">
+              <span class="block-title">오늘의 단어</span>
+            </div>
+            <button type="button" class="wotd" id="wotd-card">
+              <span class="wotd-eyebrow">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v18M5 8l7-5 7 5M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8" />
+                </svg>
+                매일 하나씩
+              </span>
+              <span class="wotd-word" id="wotd-word"></span><span class="wotd-phon" id="wotd-phon"></span>
+              <p class="wotd-def" id="wotd-def"></p>
+            </button>
+          </div>
+
+          <div class="block">
+            <div class="block-head">
+              <span class="block-title">이런 단어는 어때요?</span>
+            </div>
+            <div class="suggestions" aria-label="검색 예시">
+              <button type="button" class="suggestion" data-word="serendipity">serendipity</button>
+              <button type="button" class="suggestion" data-word="resilient">resilient</button>
+              <button type="button" class="suggestion" data-word="nuance">nuance</button>
+            </div>
           </div>
         </div>
       </main>
