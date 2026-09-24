@@ -1,7 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="My Dict">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="바로영한">
   <rect width="128" height="128" rx="37" fill="#3659c9" />
+  <path fill="#fff" d="M20 34c17-4 32 0 44 10 12-10 27-14 44-10v58c-17-3-32 1-44 12-12-11-27-15-44-12V34Z" />
+  <path fill="none" stroke="#c7d2fe" stroke-linecap="round" stroke-width="4" d="M64 45v52" />
   <path
-    fill="#fff"
-    d="M23 94v-8h11V43H23v-8h29l14 35 15-35h25v8H96v43h10v8H75v-8h9V52L67 94h-6L45 53v33h11v8H23Z"
+    fill="none"
+    stroke="#3659c9"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="6"
+    d="M38 57h46m-9-9 9 9-9 9M90 79H44m9-9-9 9 9 9"
   />
 </svg>

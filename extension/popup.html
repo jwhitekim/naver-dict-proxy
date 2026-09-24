@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>My Dict</title>
+    <title>바로영한</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
@@ -35,13 +35,12 @@
       <main id="result" aria-live="polite" aria-atomic="false">
         <div class="empty-state" id="empty-state">
           <div class="empty-lead">
-            <div class="empty-icon" aria-hidden="true">
-              <svg viewBox="0 0 32 32">
-                <path d="M7.5 5.5h12a5 5 0 0 1 5 5v16h-12a5 5 0 0 1-5-5v-16Z" />
-                <path d="M12.5 9.5h7M12.5 13.5h7M12.5 17.5h4" />
-              </svg>
+            <div class="hero-art-wrap" aria-hidden="true">
+              <img class="hero-art" src="images/dictionary-hero.png" alt="" />
             </div>
-            <p class="empty-title">궁금한 단어를 찾아보세요</p>
+            <p class="empty-kicker">바로영한</p>
+            <h1 class="empty-title">모르는 단어를<br /><em>내 것으로.</em></h1>
+            <p class="empty-copy">읽다가 멈춘 단어를 바로 찾아보세요.</p>
           </div>
 
           <div class="block" id="recent-block" hidden>
@@ -49,22 +48,6 @@
               <span class="block-title">최근 본 단어</span>
             </div>
             <div class="recent-row" id="recent-row"></div>
-          </div>
-
-          <div class="block">
-            <div class="block-head">
-              <span class="block-title">오늘의 단어</span>
-            </div>
-            <button type="button" class="wotd" id="wotd-card">
-              <span class="wotd-eyebrow">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 3v18M5 8l7-5 7 5M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8" />
-                </svg>
-                매일 하나씩
-              </span>
-              <span class="wotd-word" id="wotd-word"></span><span class="wotd-phon" id="wotd-phon"></span>
-              <p class="wotd-def" id="wotd-def"></p>
-            </button>
           </div>
 
           <div class="block">

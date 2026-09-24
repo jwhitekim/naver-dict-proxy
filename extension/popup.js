@@ -8,7 +8,6 @@ const suggestionButtons = document.querySelectorAll('.suggestion');
 const foreEdgeTab = document.getElementById('fore-edge-tab');
 const recentBlock = document.getElementById('recent-block');
 const recentRow = document.getElementById('recent-row');
-const wotdCard = document.getElementById('wotd-card');
 
 const SOURCES = [
   { value: '', label: 'Oxford' },
@@ -59,9 +58,6 @@ recentRow.addEventListener('click', (e) => {
   if (btn) lookup(btn.dataset.word);
 });
 
-wotdCard.addEventListener('click', () => lookup(wotdCard.dataset.word));
-
-initWordOfTheDay();
 initRecent();
 
 async function fetchNaverMeaning(word, source) {
@@ -229,38 +225,4 @@ function addRecent(word) {
     chrome.storage.local.set({ [RECENT_KEY]: words });
     renderRecent(words);
   });
-}
-
-// ── Word of the day ──────────────────────────────────────────────────
-// Picked locally from a fixed list by day of year, so it doesn't need a
-// server round trip just to fill the empty state.
-const WORD_OF_THE_DAY = [
-  { word: 'candor', phonetic: 'ˈkændər', def: '숨기지 않고 솔직하게 말하는 태도.' },
-  { word: 'ephemeral', phonetic: 'ɪˈfemərəl', def: '오래가지 않고 금방 사라지는.' },
-  { word: 'meticulous', phonetic: 'məˈtɪkjələs', def: '작은 것 하나까지 꼼꼼하게 신경 쓰는.' },
-  { word: 'ambivalent', phonetic: 'æmˈbɪvələnt', def: '두 가지 상반된 감정을 동시에 느끼는.' },
-  { word: 'tenacious', phonetic: 'təˈneɪʃəs', def: '쉽게 포기하지 않고 끈질긴.' },
-  { word: 'nuance', phonetic: 'ˈnuːɑːns', def: '겉으로 잘 드러나지 않는 미묘한 차이.' },
-  { word: 'resilient', phonetic: 'rɪˈzɪliənt', def: '어려움을 겪어도 금방 회복하는.' },
-  { word: 'serendipity', phonetic: 'ˌserənˈdɪpəti', def: '찾지 않았는데 우연히 좋은 걸 발견하는 것.' },
-  { word: 'candid', phonetic: 'ˈkændɪd', def: '숨김없이 솔직한. 꾸미지 않은.' },
-  { word: 'lucid', phonetic: 'ˈluːsɪd', def: '생각이나 설명이 또렷하고 이해하기 쉬운.' },
-  { word: 'austere', phonetic: 'ɔːˈstɪr', def: '꾸밈없이 단순하고 엄격한.' },
-  { word: 'plausible', phonetic: 'ˈplɔːzəbəl', def: '그럴듯해서 믿을 만한.' },
-  { word: 'inevitable', phonetic: 'ɪnˈevɪtəbəl', def: '피할 수 없이 반드시 일어나는.' },
-  { word: 'subtle', phonetic: 'ˈsʌtəl', def: '눈에 잘 띄지 않을 만큼 은은한.' },
-  { word: 'coherent', phonetic: 'koʊˈhɪrənt', def: '논리적으로 앞뒤가 맞고 일관된.' },
-];
-
-function pickWordOfTheDay() {
-  const dayIndex = Math.floor(Date.now() / 86400000);
-  return WORD_OF_THE_DAY[dayIndex % WORD_OF_THE_DAY.length];
-}
-
-function initWordOfTheDay() {
-  const wotd = pickWordOfTheDay();
-  wotdCard.dataset.word = wotd.word;
-  wotdCard.querySelector('.wotd-word').textContent = wotd.word;
-  wotdCard.querySelector('.wotd-phon').textContent = `/${wotd.phonetic}/`;
-  wotdCard.querySelector('.wotd-def').textContent = wotd.def;
 }
